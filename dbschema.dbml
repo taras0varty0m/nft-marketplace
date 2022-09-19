@@ -1,0 +1,49 @@
+Table Users {
+  id UUIDv4 [pk]
+  nickname varchar [unique, not null]
+  email varchar [unique, not null]
+  password varchar [not null]
+  aboutMe varchar
+  firstName varchar [not null]
+  lastName varchar [not null]
+  birthDate date [not null]
+  gender string [not null]
+  role string [not null]
+  walletId UUIDv4 [ref: - Wallets.id]
+}
+
+Table Wallets {
+  id UUIDv4 [pk]
+  balance numeric(15,6) [not null, default: "0'::numeric"]
+  coin varchar [not null]
+  ownerId UUIDv4 [ref: - Users.id]
+}
+
+Table Transactions {
+  id UUIDv4 [pk]
+  amount numeric(15,6) [not null, default: "0'::numeric"]
+  coin varchar [not null]
+  buyerId UUIDv4 [ref: - Users.id]
+  sellerId UUIDv4 [ref: - Users.id]
+  assetId UUIDv4 [ref: - Assets.id]
+}
+
+Table Assets {
+  id UUIDv4 [pk]
+  imageUrl varchar [not null]
+  title varchar [not null]
+  description varchar [not null]
+  price numeric(15,6) [not null, default: "0'::numeric"]
+  lastSaleAt timestampz
+  category varchar [not null]
+  ownerId UUIDv4 [ref: - Users.id]
+  creatorId UUIDv4 [ref: - Users.id]
+}
+
+Table Comments {
+  id UUIDv4 [pk]
+  comment varchar [not null]
+  authorId UUIDv4 [ref: - Users.id]
+  assetId UUIDv4 [ref: - Assets.id]
+}
+

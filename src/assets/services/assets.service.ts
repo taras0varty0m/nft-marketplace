@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as currency from 'currency.js';
-import { FindManyOptions } from 'typeorm';
 
 import { AssetSearchArgs } from '../../common/pagination-filtering/asset-search.args';
 import { UserEntity } from '../../users/entities/user.entity';
@@ -12,10 +11,6 @@ import { AssetsRepository } from '../repositories/assets.repository';
 @Injectable()
 export class AssetsService {
   constructor(private readonly assetRepository: AssetsRepository) {}
-
-  async count(options: FindManyOptions<AssetEntity>) {
-    return this.assetRepository.count(options);
-  }
 
   async createAsset(
     createAssetInput: CreateAssetInput,

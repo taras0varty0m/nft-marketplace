@@ -11,6 +11,6 @@ import { UsersService } from './services/users.service';
 @Module({
   imports: [TypeOrmModule.forFeature([UserEntity, AssetEntity])],
   providers: [UsersResolver, UsersService, UsersRepository, AssetsRepository],
-  exports: [UsersService],
+  exports: [UsersService, UsersRepository],
 })
 export class UsersModule {}

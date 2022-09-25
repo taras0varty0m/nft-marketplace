@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { FindManyOptions, FindOneOptions } from 'typeorm';
 
-import { RegisterUserInput } from '../dto/register-user.input';
 import { UpdateUserInput } from '../dto/update-user.input';
 import { UserEntity } from '../entities/user.entity';
 import { UsersRepository } from '../repositories/users.repository';
@@ -10,18 +8,8 @@ import { UsersRepository } from '../repositories/users.repository';
 export class UsersService {
   constructor(private readonly userRepository: UsersRepository) {}
 
-  async findOne(
-    options: FindOneOptions<UserEntity>,
-  ): Promise<UserEntity | null> {
-    return this.userRepository.findOne(options);
-  }
-
-  async count(options: FindManyOptions<UserEntity>) {
-    return this.userRepository.count(options);
-  }
-
-  async createUser(registrationData: RegisterUserInput): Promise<UserEntity> {
-    return this.userRepository.createUser(registrationData);
+  async findOneById(id: UserEntity['id']): Promise<UserEntity | null> {
+    return this.userRepository.findOne({ where: { id } });
   }
 
   async updateUser(updateUserInput: UpdateUserInput, userId: UserEntity['id']) {

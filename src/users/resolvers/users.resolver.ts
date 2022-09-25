@@ -17,7 +17,7 @@ export class UsersResolver {
 
   @Query(() => UserProfileOutput)
   async getUserProfile(@Args('id', { type: () => String }) id: string) {
-    const user = await this.usersService.findOne({ where: { id } });
+    const user = await this.usersService.findOneById(id);
 
     if (!user) {
       throw new UserNotFoundException(id);

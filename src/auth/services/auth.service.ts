@@ -6,21 +6,21 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { UsersRepository } from 'src/users/repositories/users.repository';
 
 import { RegisterUserInput } from '../../users/dto/register-user.input';
-import { UsersService } from '../../users/services/users.service';
 import { LoginInput } from '../dto/login.input';
 import { JwtPayload } from '../jwt/jwt-payload.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersService: UsersService,
+    private readonly usersRepository: UsersRepository,
     private readonly jwtService: JwtService,
   ) {}
 
   async register(registrationData: RegisterUserInput) {
-    const isDuplicateUser = await this.usersService.count({
+    const isDuplicateUser = await this.usersRepository.count({
       where: [
         { email: registrationData.email },
         { nickname: registrationData.nickname },
@@ -34,7 +34,7 @@ export class AuthService {
     const hashedPassword = await bcrypt.hash(registrationData.password, 10);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...createdUser } = await this.usersService.createUser({
+    const { password, ...createdUser } = await this.usersRepository.createUser({
       ...registrationData,
       password: hashedPassword,
     });
@@ -45,7 +45,7 @@ export class AuthService {
   async login(loginInput: LoginInput) {
     const { nickname, password } = loginInput;
 
-    const user = await this.usersService.findOne({
+    const user = await this.usersRepository.findOne({
       where: { nickname },
       select: ['id', 'password'],
     });

@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { AssetsRepository } from 'src/assets/repositories/assets.repository';
 
 import { AssetNotFoundException } from '../../assets/exceptions/asset-not-found.exception';
-import { AssetsService } from '../../assets/services/assets.service';
 import { Direction } from '../../common/pagination-filtering/enums/direction.enums';
 import { PaginationInfo } from '../../common/pagination-filtering/pagination-info.output';
 import { PaginationArgs } from '../../common/pagination-filtering/pagination.args';
@@ -16,14 +16,14 @@ import { CommentsRepository } from '../repositories/comments.repository';
 export class CommentsService {
   constructor(
     private readonly commentRepository: CommentsRepository,
-    private readonly assetsService: AssetsService,
+    private readonly assetsRepository: AssetsRepository,
   ) {}
 
   async createComment(
     createCommentInput: CreateCommentInput,
     authorId: UserEntity['id'],
   ) {
-    const asset = await this.assetsService.count({
+    const asset = await this.assetsRepository.count({
       where: {
         id: createCommentInput.assetId,
       },

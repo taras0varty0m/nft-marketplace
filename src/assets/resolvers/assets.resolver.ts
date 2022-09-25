@@ -13,7 +13,7 @@ import { PaginationArgs } from 'src/common/pagination-filtering/pagination.args'
 import { CurrentUser } from '../../auth/decorators/current-user.decorator';
 import { GqlAuthGuard } from '../../auth/guards/graphql-jwt-auth.guard';
 import { CommentsLoader } from '../../comments/loaders/comments.loader';
-import { AssetSearchArgs } from '../../common/pagination-filtering/asset-search.args';
+import { AssetSearchArgs } from '../dto/asset-search.args';
 import { UserEntity } from '../../users/entities/user.entity';
 import { CreateAssetInput } from '../dto/create-asset.input';
 import { Asset } from '../models/asset.model';

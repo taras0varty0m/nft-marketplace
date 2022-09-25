@@ -11,9 +11,10 @@ import {
 import { DateResolver } from 'graphql-scalars';
 
 import Gender from '../enums/gender.enum';
+import { IUpdateUser } from '../types';
 
 @InputType()
-export class UpdateUserInput {
+export class UpdateUserInput implements IUpdateUser {
   @Field({ nullable: true })
   @IsAlphanumeric()
   @Length(4, 20)

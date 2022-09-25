@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataSource, ILike, Repository } from 'typeorm';
 
-import { AssetSearchArgs } from '../../common/pagination-filtering/asset-search.args';
 import { UserEntity } from '../../users/entities/user.entity';
-import { CreateAssetInput } from '../dto/create-asset.input';
 import { AssetEntity } from '../entities/asset.entity';
+import { IAssetSearchArgs, ICreateAsset } from '../types';
 
 @Injectable()
 export class AssetsRepository extends Repository<AssetEntity> {
@@ -19,12 +18,9 @@ export class AssetsRepository extends Repository<AssetEntity> {
     });
   }
 
-  async createAsset(
-    createAssetInput: CreateAssetInput,
-    userId: UserEntity['id'],
-  ) {
+  async createAsset(createAssetData: ICreateAsset, userId: UserEntity['id']) {
     const newAsset = this.create({
-      ...createAssetInput,
+      ...createAssetData,
       ownerId: userId,
       creatorId: userId,
     });
@@ -32,7 +28,7 @@ export class AssetsRepository extends Repository<AssetEntity> {
     return this.save(newAsset);
   }
 
-  async getAssets(assetSearchArgs: AssetSearchArgs) {
+  async getAssets(assetSearchArgs: IAssetSearchArgs) {
     const { searchTerm, limit, offset, orderBy } = assetSearchArgs;
     const { field, direction } = orderBy;
 

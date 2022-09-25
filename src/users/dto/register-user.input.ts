@@ -9,11 +9,12 @@ import {
   MaxLength,
 } from 'class-validator';
 import { DateResolver } from 'graphql-scalars';
+import { IRegisterUser } from 'src/auth/types';
 
 import Gender from '../enums/gender.enum';
 
 @InputType()
-export class RegisterUserInput {
+export class RegisterUserInput implements IRegisterUser {
   @Field()
   @IsAlphanumeric()
   @Length(4, 20)

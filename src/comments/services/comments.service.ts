@@ -1,16 +1,16 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AssetsRepository } from 'src/assets/repositories/assets.repository';
+import { IPaginationArgs } from 'src/common/types';
 
 import { AssetNotFoundException } from '../../assets/exceptions/asset-not-found.exception';
 import { Direction } from '../../common/pagination-filtering/enums/direction.enums';
 import { PaginationInfo } from '../../common/pagination-filtering/pagination-info.output';
 import { PaginationArgs } from '../../common/pagination-filtering/pagination.args';
 import { UserEntity } from '../../users/entities/user.entity';
-import { CreateCommentInput } from '../dto/create-comment.input';
-import { UpdateCommentInput } from '../dto/update-comment.input';
 import { CommentEntity } from '../entities/comment.entity';
 import { CommentNotFoundException } from '../exceptions/comment-not-found.exception';
 import { CommentsRepository } from '../repositories/comments.repository';
+import { ICreateComment, IUpdateComment } from '../types';
 
 @Injectable()
 export class CommentsService {
@@ -20,25 +20,25 @@ export class CommentsService {
   ) {}
 
   async createComment(
-    createCommentInput: CreateCommentInput,
+    createCommentData: ICreateComment,
     authorId: UserEntity['id'],
   ) {
     const asset = await this.assetsRepository.count({
       where: {
-        id: createCommentInput.assetId,
+        id: createCommentData.assetId,
       },
     });
 
     if (!asset) {
-      throw new AssetNotFoundException(createCommentInput.assetId);
+      throw new AssetNotFoundException(createCommentData.assetId);
     }
 
-    return this.commentRepository.createComment(createCommentInput, authorId);
+    return this.commentRepository.createComment(createCommentData, authorId);
   }
 
   async getCommentsByAssetIds(
     assetIds: string[],
-    paginationArgs: PaginationArgs,
+    paginationArgs: IPaginationArgs,
   ) {
     const comments = await this.commentRepository.getCommentsByAssetIds(
       assetIds,
@@ -55,10 +55,10 @@ export class CommentsService {
   }
 
   async updateComment(
-    updateCommentInput: UpdateCommentInput,
+    updateCommentData: IUpdateComment,
     userId: UserEntity['id'],
   ): Promise<CommentEntity> {
-    const { id } = updateCommentInput;
+    const { id } = updateCommentData;
 
     const comment = await this.commentRepository.findOne({
       where: { id },
@@ -71,7 +71,7 @@ export class CommentsService {
 
     this.verifyUserIsAuthor(comment, userId);
 
-    return this.commentRepository.updateComment(updateCommentInput);
+    return this.commentRepository.updateComment(updateCommentData);
   }
 
   async deleteComment(id: string, userId: UserEntity['id']) {

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 
-import { UpdateUserInput } from '../dto/update-user.input';
 import { UserEntity } from '../entities/user.entity';
 import { UsersRepository } from '../repositories/users.repository';
+import { IUpdateUser } from '../types';
 
 @Injectable()
 export class UsersService {
@@ -12,8 +12,8 @@ export class UsersService {
     return this.userRepository.findOne({ where: { id } });
   }
 
-  async updateUser(updateUserInput: UpdateUserInput, userId: UserEntity['id']) {
-    await this.userRepository.update(userId, updateUserInput);
+  async updateUser(updateUserData: IUpdateUser, userId: UserEntity['id']) {
+    await this.userRepository.update(userId, updateUserData);
 
     const updatedUser = await this.userRepository.findOne({
       where: { id: userId },

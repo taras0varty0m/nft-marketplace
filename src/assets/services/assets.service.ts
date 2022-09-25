@@ -1,25 +1,21 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as currency from 'currency.js';
 
-import { AssetSearchArgs } from '../../common/pagination-filtering/asset-search.args';
 import { UserEntity } from '../../users/entities/user.entity';
-import { CreateAssetInput } from '../dto/create-asset.input';
 import { AssetEntity } from '../entities/asset.entity';
 import { AssetNotFoundException } from '../exceptions/asset-not-found.exception';
 import { AssetsRepository } from '../repositories/assets.repository';
+import { IAssetSearchArgs, ICreateAsset } from '../types';
 
 @Injectable()
 export class AssetsService {
   constructor(private readonly assetRepository: AssetsRepository) {}
 
-  async createAsset(
-    createAssetInput: CreateAssetInput,
-    userId: UserEntity['id'],
-  ) {
-    return this.assetRepository.createAsset(createAssetInput, userId);
+  async createAsset(createAssetData: ICreateAsset, userId: UserEntity['id']) {
+    return this.assetRepository.createAsset(createAssetData, userId);
   }
 
-  async getAssets(assetSearchArgs: AssetSearchArgs) {
+  async getAssets(assetSearchArgs: IAssetSearchArgs) {
     return this.assetRepository.getAssets(assetSearchArgs);
   }
 

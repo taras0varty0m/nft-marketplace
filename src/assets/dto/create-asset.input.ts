@@ -2,9 +2,10 @@ import { Field, InputType } from '@nestjs/graphql';
 import { IsPositive, Length } from 'class-validator';
 
 import { IsImageUrl } from '../../common/input-validation/is-image-url.decorator';
+import { ICreateAsset } from '../types';
 
 @InputType()
-export class CreateAssetInput {
+export class CreateAssetInput implements ICreateAsset {
   @Field()
   @IsImageUrl({ message: 'Must be a valid image URL' })
   imageUrl: string;

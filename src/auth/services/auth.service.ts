@@ -8,9 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersRepository } from 'src/users/repositories/users.repository';
 
-import { RegisterUserInput } from '../../users/dto/register-user.input';
-import { LoginInput } from '../dto/login.input';
 import { JwtPayload } from '../jwt/jwt-payload.interface';
+import { ILoginUser, IRegisterUser } from '../types';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +18,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register(registrationData: RegisterUserInput) {
+  async register(registrationData: IRegisterUser) {
     const isDuplicateUser = await this.usersRepository.count({
       where: [
         { email: registrationData.email },
@@ -42,8 +41,8 @@ export class AuthService {
     return createdUser;
   }
 
-  async login(loginInput: LoginInput) {
-    const { nickname, password } = loginInput;
+  async login(loginData: ILoginUser) {
+    const { nickname, password } = loginData;
 
     const user = await this.usersRepository.findOne({
       where: { nickname },

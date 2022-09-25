@@ -2,9 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DataSource, In, Repository } from 'typeorm';
 
 import { UserEntity } from '../../users/entities/user.entity';
-import { CreateCommentInput } from '../dto/create-comment.input';
 import { CommentEntity } from '../entities/comment.entity';
-import { UpdateCommentInput } from './../dto/update-comment.input';
+import { ICreateComment, IUpdateComment } from '../types';
 
 @Injectable()
 export class CommentsRepository extends Repository<CommentEntity> {
@@ -13,22 +12,22 @@ export class CommentsRepository extends Repository<CommentEntity> {
   }
 
   async createComment(
-    createCommentInput: CreateCommentInput,
+    createCommentData: ICreateComment,
     authorId: UserEntity['id'],
   ) {
     const newComment = this.create({
-      ...createCommentInput,
+      ...createCommentData,
       authorId,
     });
 
     return this.save(newComment);
   }
 
-  async updateComment(updateCommentInput: UpdateCommentInput) {
-    await this.update(updateCommentInput.id, updateCommentInput);
+  async updateComment(updateCommentData: IUpdateComment) {
+    await this.update(updateCommentData.id, updateCommentData);
 
     return this.findOneOrFail({
-      where: { id: updateCommentInput.id },
+      where: { id: updateCommentData.id },
       relations: ['author', 'asset'],
     });
   }

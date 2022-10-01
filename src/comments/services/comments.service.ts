@@ -1,9 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AssetsRepository } from 'src/assets/repositories/assets.repository';
+import { Direction } from 'src/common/pagination-filtering/enums/direction.enums';
 import { IPaginationArgs } from 'src/common/types';
 
 import { AssetNotFoundException } from '../../assets/exceptions/asset-not-found.exception';
-import { Direction } from '../../common/pagination-filtering/enums/direction.enums';
 import { PaginationInfo } from '../../common/pagination-filtering/pagination-info.output';
 import { PaginationArgs } from '../../common/pagination-filtering/pagination.args';
 import { UserEntity } from '../../users/entities/user.entity';
@@ -108,11 +108,22 @@ export class CommentsService {
       [key: string]: CommentEntity[];
     },
     paginationArgs: PaginationArgs,
-  ): { [key: string]: CommentEntity[] } {
+  ): {
+    [key: string]: {
+      paginationInfo: PaginationInfo;
+      comments: CommentEntity[];
+    };
+  } {
     const { limit, offset, orderBy } = paginationArgs;
     const { direction } = orderBy;
 
-    const paginatedCommentsOutput: Record<string, CommentEntity[]> = {};
+    const paginatedCommentsOutput: Record<
+      string,
+      {
+        paginationInfo: PaginationInfo;
+        comments: CommentEntity[];
+      }
+    > = {};
 
     const dateSorter = (a: CommentEntity, b: CommentEntity) => {
       if (direction === Direction.ASC) {
@@ -138,7 +149,10 @@ export class CommentsService {
         offset,
       };
 
-      paginatedCommentsOutput[assetId] = paginatedComments;
+      paginatedCommentsOutput[assetId] = {
+        paginationInfo,
+        comments: paginatedComments,
+      };
     });
 
     return paginatedCommentsOutput;

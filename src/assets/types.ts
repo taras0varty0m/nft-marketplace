@@ -11,5 +11,5 @@ export interface ICreateAsset {
 }
 
 export interface IAssetSearchArgs extends PaginationArgs {
-  searchTerm: string;
+  searchTerm?: string;
 }

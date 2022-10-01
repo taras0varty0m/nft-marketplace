@@ -8,6 +8,6 @@ export class AssetSearchArgs
   extends PaginationArgs
   implements IAssetSearchArgs
 {
-  @Field()
-  searchTerm: string;
+  @Field({ nullable: true })
+  searchTerm?: string;
 }

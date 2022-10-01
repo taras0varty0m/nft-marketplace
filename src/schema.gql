@@ -111,7 +111,7 @@ enum Coin {
 
 type Query {
   getUserProfile(id: String!): UserProfileOutput!
-  getAllAssets(limit: Float = 10, offset: Float = 0, orderBy: OrderBy = {field: "createdAt"}, searchTerm: String!): PaginatedAssets!
+  getAllAssets(limit: Float = 10, offset: Float = 0, orderBy: OrderBy = {field: "createdAt"}, searchTerm: String): PaginatedAssets!
   getAssetById(assetId: ID!): Asset!
   login(loginInput: LoginInput!): AccessTokenOutput!
   viewTransactions: [TransactionOutput!]!

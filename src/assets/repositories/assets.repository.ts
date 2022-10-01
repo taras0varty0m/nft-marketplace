@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DataSource, ILike, Repository } from 'typeorm';
+import { DataSource, FindOptionsWhere, ILike, Repository } from 'typeorm';
 
 import { UserEntity } from '../../users/entities/user.entity';
 import { AssetEntity } from '../entities/asset.entity';
@@ -32,8 +32,10 @@ export class AssetsRepository extends Repository<AssetEntity> {
     const { searchTerm, limit, offset, orderBy } = assetSearchArgs;
     const { field, direction } = orderBy;
 
-    const [assets, total] = await this.findAndCount({
-      where: [
+    let findOptionsWhere: FindOptionsWhere<AssetEntity>[] | undefined;
+
+    if (searchTerm) {
+      findOptionsWhere = [
         { title: ILike(`%${searchTerm}%`) },
         { description: ILike(`%${searchTerm}%`) },
         { category: ILike(`%${searchTerm}%`) },
@@ -43,7 +45,11 @@ export class AssetsRepository extends Repository<AssetEntity> {
         { owner: { nickname: ILike(`%${searchTerm}%`) } },
         { owner: { firstName: ILike(`%${searchTerm}%`) } },
         { owner: { lastName: ILike(`%${searchTerm}%`) } },
-      ],
+      ];
+    }
+
+    const [assets, total] = await this.findAndCount({
+      where: findOptionsWhere,
       order: {
         [field]: direction,
       },

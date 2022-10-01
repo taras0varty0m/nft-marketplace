@@ -23,10 +23,11 @@ export class CommentsService {
     createCommentData: ICreateComment,
     authorId: UserEntity['id'],
   ) {
-    const asset = await this.assetsRepository.count({
+    const asset = await this.assetsRepository.findOne({
       where: {
         id: createCommentData.assetId,
       },
+      select: ['id'],
     });
 
     if (!asset) {

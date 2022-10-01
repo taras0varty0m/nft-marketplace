@@ -19,11 +19,12 @@ export class AuthService {
   ) {}
 
   async register(registrationData: IRegisterUser) {
-    const isDuplicateUser = await this.usersRepository.count({
+    const isDuplicateUser = await this.usersRepository.findOne({
       where: [
         { email: registrationData.email },
         { nickname: registrationData.nickname },
       ],
+      select: ['id'],
     });
 
     if (isDuplicateUser) {

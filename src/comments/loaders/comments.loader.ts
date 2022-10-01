@@ -1,5 +1,5 @@
 import { Injectable, Scope } from '@nestjs/common';
-import DataLoader from 'dataloader';
+import * as DataLoader from 'dataloader';
 import { PaginationArgs } from 'src/common/pagination-filtering/pagination.args';
 
 import { CommentsService } from './../services/comments.service';

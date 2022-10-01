@@ -28,17 +28,11 @@ export class TransactionsService {
   async buyAsset(assetId: string, buyer: Pick<UserEntity, 'id' | 'wallet'>) {
     try {
       return this.dataSource.transaction(async (manager) => {
-        const assetsRepository = manager.withRepository(this.assetsRepository);
-
-        const transactionRepository = manager.withRepository(
-          this.transactionRepository,
-        );
-
         if (!buyer.wallet) {
           throw new UserWalletNotFoundException(buyer.id);
         }
 
-        const asset = await assetsRepository.getAssetAndOwner(assetId);
+        const asset = await this.assetsRepository.getAssetAndOwner(assetId);
 
         if (!asset.owner) {
           throw new AssetOwnerNotFoundException(asset.id);
@@ -66,7 +60,7 @@ export class TransactionsService {
           ]),
         );
 
-        return transactionRepository.findOne({
+        return this.transactionRepository.findOne({
           where: { id },
           relations: ['asset', 'buyer', 'seller', 'asset.owner'],
         });

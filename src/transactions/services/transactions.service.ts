@@ -3,6 +3,7 @@ import { AssetOwnerNotFoundException } from 'src/assets/exceptions/asset-owner-n
 import { AssetsRepository } from 'src/assets/repositories/assets.repository';
 import { NotEnoughBalanceException } from 'src/wallets/exceptions/not-enough-balance.exception';
 import { UserWalletNotFoundException } from 'src/wallets/exceptions/user-wallet-not-found.exception';
+import { WalletsRepository } from 'src/wallets/repositories/wallets.repository';
 import { WalletsService } from 'src/wallets/services/wallets.service';
 import { DataSource } from 'typeorm';
 
@@ -20,6 +21,7 @@ export class TransactionsService {
   constructor(
     private readonly transactionRepository: TransactionRepository,
     private readonly walletsService: WalletsService,
+    private readonly walletsRepository: WalletsRepository,
     private readonly assetsService: AssetsService,
     private readonly assetsRepository: AssetsRepository,
     private readonly dataSource: DataSource,
@@ -29,7 +31,15 @@ export class TransactionsService {
     try {
       return this.dataSource.transaction(async (manager) => {
         if (!buyer.wallet) {
-          throw new UserWalletNotFoundException(buyer.id);
+          const buyerWallet = await this.walletsRepository.findOne({
+            where: { ownerId: buyer.id },
+          });
+
+          if (!buyerWallet) {
+            throw new UserWalletNotFoundException(buyer.id);
+          }
+
+          buyer.wallet = buyerWallet;
         }
 
         const asset = await this.assetsRepository.getAssetAndOwner(assetId);
@@ -44,8 +54,8 @@ export class TransactionsService {
 
         this.validateTransaction(asset, assetId, buyer);
 
-        const { id } = await manager.save(
-          this.createBuyTransactionEntity(asset, buyer.id),
+        const { id } = await this.transactionRepository.save(
+          this.createBuyTransactionEntity(asset, buyer.id, buyer.wallet.coin),
         );
 
         await manager.save(
@@ -60,7 +70,7 @@ export class TransactionsService {
           ]),
         );
 
-        return this.transactionRepository.findOne({
+        return this.transactionRepository.findOneOrFail({
           where: { id },
           relations: ['asset', 'buyer', 'seller', 'asset.owner'],
         });
@@ -110,14 +120,14 @@ export class TransactionsService {
   private createBuyTransactionEntity(
     asset: AssetEntity,
     buyerId: UserEntity['id'],
+    coin: string,
   ) {
-    const transaction = {
+    return this.transactionRepository.create({
+      coin,
       buyerId,
       assetId: asset.id,
       sellerId: asset.ownerId,
       amount: asset.price,
-    };
-
-    return this.transactionRepository.create(transaction);
+    });
   }
 }

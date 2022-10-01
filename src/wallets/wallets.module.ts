@@ -10,6 +10,6 @@ import { WalletsService } from './services/wallets.service';
 @Module({
   imports: [TypeOrmModule.forFeature([WalletEntity, AssetEntity])],
   providers: [WalletsService, WalletsRepository, AssetsRepository],
-  exports: [WalletsService],
+  exports: [WalletsService, WalletsRepository],
 })
 export class WalletsModule {}

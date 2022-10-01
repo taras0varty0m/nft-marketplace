@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { AssetsRepository } from 'src/assets/repositories/assets.repository';
-import { Direction } from 'src/common/pagination-filtering/enums/direction.enums';
 import { IPaginationArgs } from 'src/common/types';
+import { dateSorter } from 'src/common/utils/date-sorter';
 
 import { AssetNotFoundException } from '../../assets/exceptions/asset-not-found.exception';
 import { PaginationInfo } from '../../common/pagination-filtering/pagination-info.output';
@@ -119,19 +119,8 @@ export class CommentsService {
 
     const paginatedCommentsOutput: Record<
       string,
-      {
-        paginationInfo: PaginationInfo;
-        comments: CommentEntity[];
-      }
+      { paginationInfo: PaginationInfo; comments: CommentEntity[] }
     > = {};
-
-    const dateSorter = (a: CommentEntity, b: CommentEntity) => {
-      if (direction === Direction.ASC) {
-        return a.createdAt.getTime() - b.createdAt.getTime();
-      }
-
-      return b.createdAt.getTime() - a.createdAt.getTime();
-    };
 
     Object.keys(groupedComments).forEach((assetId) => {
       const paginationLimit =
@@ -140,7 +129,7 @@ export class CommentsService {
           : groupedComments[assetId].length - offset;
 
       const paginatedComments = groupedComments[assetId]
-        .sort(dateSorter)
+        .sort(dateSorter(direction))
         .slice(offset, paginationLimit);
 
       const paginationInfo: PaginationInfo = {
